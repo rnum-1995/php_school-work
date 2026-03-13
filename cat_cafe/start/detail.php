@@ -6,7 +6,6 @@ if (empty($id) || !is_numeric($id)) {
   header('Location: index.php');
   exit;
 }
-
 // 【TODO】データベースに接続する関数を呼び出し、変数 $db に代入してください。
 $db = db_connect();
 $cat = null;
@@ -15,7 +14,7 @@ try {
   // 【TODO】特定のキャストと品種情報を取得するSQL文を作成し、変数 $sql に代入してください。
   // （catsテーブルの全カラムと、breedsテーブルのnameカラムを breed_name として取得）
   // （条件：catsテーブルのid が、URLパラメータから取得したid に一致すること）
-  $sql = 'SELECT cats.*,breeds.name AS breed_name FROM cats INNER JOIN breeds ON cats.breed_id = breeds.id  WHERE cats.id = :id';
+  $sql = 'SELECT cats.*,breeds.name AS breed_name FROM cats INNER JOIN breeds ON cats.breed_id = breeds.id WHERE cats.id = :id';
 
   // 【TODO】SQL文を準備し、実行してください。
   // （プレースホルダ `:id` に、変数 `$id` をバインドしてください。型は数値です）
@@ -25,7 +24,6 @@ try {
 
   // 【TODO】取得した1件のデータを連想配列として変数 $cat に代入してください。
   $cat = $stmt->fetch(PDO::FETCH_ASSOC);
-
 
   if (!$cat) {
     header('Location: index.php');
@@ -56,9 +54,8 @@ require_once 'inc/header.php';
     <!-- 【TODO】 もしキャストの「image_name」が空ではなく、かつファイルが /images/ の下にあるなら、<img> タグで画像を表示してください -->
     <!-- （画像のパスや alt 属性のエスケープを忘れないこと。クラスには 'img-fluid rounded shadow-sm w-100' 等を設定） -->
     <?php if (!empty($cat['image_name']) && file_exists('images/' . $cat['image_name'])): ?>
-      <img src="images/<?php echo h($cat['image_name']); ?>" alt="<?php h($cat['name']); ?>" class="card-img-top">
+      <img src="images/<?php echo h($cat['image_name']); ?>" alt="<?php echo h($cat['name']); ?>" class="img-fluid rounded shadow-sm w-100">
     <?php else: ?>
-
       <!-- 【TODO】 もし画像がなければ、以下のプレースホルダーを表示させてください -->
       <div class="bg-secondary text-white d-flex justify-content-center align-items-center rounded shadow-sm w-100" style="height: 400px;">
         <span class="fs-4">No Image</span>
@@ -76,7 +73,6 @@ require_once 'inc/header.php';
             <!-- 【TODO】 もし性別「gender」が 1(おとこのこ) なら、以下のHTML（青色の♂）を表示してください -->
             <?php if ($cat['gender'] === 1): ?>
               <span class="text-primary fs-4 ms-2">♂</span>
-
               <!-- 【TODO】 もし性別「gender」が 2(おんなのこ) なら、以下のHTML（赤色の♀）を表示してください -->
             <?php elseif ($cat['gender'] === 2): ?>
               <span class="text-danger fs-4 ms-2">♀</span>
@@ -87,20 +83,15 @@ require_once 'inc/header.php';
             <tbody>
               <tr>
                 <th class="w-25 text-muted">ID</th>
-                <td><span class="badge bg-light text-dark border"><!-- 【TODO】 そのキャストの「id」をエスケープして表示してください -->
-                    <?php echo h($cat['id']); ?>
-                  </span></td>
+                <td><span class="badge bg-light text-dark border"><!-- 【TODO】 そのキャストの「id」をエスケープして表示してください --><?php echo h($cat['id']); ?></span></td>
               </tr>
               <tr>
                 <th class="text-muted">種類</th>
-                <td class="fs-5"><!-- 【TODO】 品種名「breed_name」をエスケープして表示してください -->
-                  <?php echo h($cat['breed_name']); ?>
-                </td>
+                <td class="fs-5"><!-- 【TODO】 品種名「breed_name」をエスケープして表示してください --><?php echo h($cat['breed_name']); ?></td>
               </tr>
               <tr>
                 <th class="text-muted">年齢</th>
-                <td class="fs-5"><!-- 【TODO】 年齢「age」をエスケープして表示してください -->
-                  <?php echo h($cat['age']); ?>歳</td>
+                <td class="fs-5"><!-- 【TODO】 年齢「age」をエスケープして表示してください --><?php echo h($cat['age']); ?> 歳</td>
               </tr>
               <tr>
                 <th class="text-muted">紹介文</th>
@@ -114,10 +105,8 @@ require_once 'inc/header.php';
               <tr>
                 <th class="text-muted border-top pt-3 mt-3">登録情報</th>
                 <td class="border-top pt-3 mt-3 small text-muted">
-                  登録: <!-- 【TODO】 登録日時「created_at」をエスケープして表示してください -->
-                  <?php echo h($cat['created_at']); ?><br>
-                  更新: <!-- 【TODO】 更新日時「updated_at」をエスケープして表示してください -->
-                  <?php echo h($cat['updated_at']); ?>
+                  登録: <!-- 【TODO】 登録日時「created_at」をエスケープして表示してください --><?php echo h(format_date($cat['created_at'],1)); ?><br>
+                  更新: <!-- 【TODO】 更新日時「updated_at」をエスケープして表示してください --><?php echo h(format_date($cat['updated_at'],2)); ?>
                 </td>
               </tr>
             </tbody>

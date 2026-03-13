@@ -14,7 +14,7 @@ if (empty($id) || !is_numeric($id)) {
 }
 
 // 【TODO】データベースに接続する関数を呼び出し、変数 $db に代入してください。
-
+$db = db_connect();
 try {
   // まずは削除対象の猫情報を取得して、画像ファイル名を確認する
   $sql = "SELECT image_name FROM cats WHERE id = :id";
@@ -34,10 +34,12 @@ try {
 
     // レコードの削除
     // 【TODO】catsテーブルから、指定された $id のレコードを削除するSQL文を変数 $sql_delete に代入してください。
-
+    $sql_delete = 'DELETE FROM cats WHERE id = :id';
 
     // 【TODO】SQL文を準備し、プレースホルダ `:id` に変数 `$id` をバインドして実行してください。
-
+    $stmt_delete = $db->prepare($sql_delete);
+    $stmt_delete->bindParam(':id',$id,PDO::PARAM_INT);
+    $stmt_delete->execute();
 
     $_SESSION['msg'] = 'キャストの情報を削除しました。';
   }

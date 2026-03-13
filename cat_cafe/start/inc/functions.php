@@ -32,3 +32,13 @@ function h($string)
   }
   return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
 }
+
+// 日付のフォーマット用関数
+function format_date($datetime,$type)
+{
+  $format_types = [
+    1 => 'Y年n月j日 H時i分s秒',
+    2 => 'Y/m/d'
+  ];
+  return date($format_types[$type], strtotime($datetime));
+}

@@ -8,6 +8,7 @@ if (empty($id) || !is_numeric($id)) {
 }
 
 // 【TODO】データベースに接続する関数を呼び出し、変数 $db に代入してください。
+$db = db_connect();
 
 $err_msg = $_SESSION['err_msg'] ?? '';
 unset($_SESSION['err_msg']);
@@ -18,12 +19,15 @@ $breeds = [];
 try {
   // キャスト情報の取得
   // 【TODO】catsテーブルから id が $id に一致するレコードを1件取得するSQL文を作成し、変数 $sql に代入してください。
-
+  $sql = 'SELECT * FROM cats WHERE id = :id';
 
   // 【TODO】SQL文を準備し、プレースホルダ `:id` に変数 `$id` をバインドして実行してください。
-
+  $stmt = $db->prepare($sql);
+  $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+  $stmt->execute();
 
   // 【TODO】取得した1件のデータを連想配列形式で取得し、変数 $cat に代入してください。
+  $cat = $stmt->fetch(PDO::FETCH_ASSOC);
 
   if (!$cat) {
     header('Location: index.php');
@@ -32,16 +36,17 @@ try {
 
   // 品種リストの取得
   // 【TODO】breedsテーブルからすべての品種データをidの昇順で取得するSQL文を作成し、変数 $sql_breeds に代入してください。
-
+  $sql_breeds = 'SELECT * FROM breeds ORDER BY id ASC';
 
   // 【TODO】SQL文を準備し、実行してください。
-
+  $stmt_breeds = $db->prepare($sql_breeds);
+  $stmt_breeds->execute();
 
   // 【TODO】取得した全データを連想配列形式で取得し、変数 $breeds に代入してください。
+  $breeds = $stmt_breeds->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
   exit('データの取得に失敗しました: ' . h($e->getMessage()));
 }
-
 
 // エラー復帰用のセッション値、なければDBの値をセット
 $name              = $_SESSION['form_data']['name'] ?? $cat['name'];
@@ -72,7 +77,7 @@ require_once 'inc/header.php';
     <form action="edit_do.php" method="POST">
       <!-- 更新対象のIDを隠しフィールドで送る -->
       <!-- 【TODO】編集対象のキャストの「id」をvalue属性に出力してください -->
-      <input type="hidden" name="id" value="<!-- ここに出力 -->">
+      <input type="hidden" name="id" value="<?php echo h($cat['id']); ?>">
 
       <div class="row mb-3">
         <div class="col-md-12">
@@ -86,11 +91,12 @@ require_once 'inc/header.php';
           <label for="breed_id" class="form-label fw-bold">品種 <span class="badge bg-danger">必須</span></label>
           <select class="form-select" id="breed_id" name="breed_id" required>
             <option value="">選択してください</option>
+            <!-- 【TODO】 品種の「id」をvalue属性に、「name」をエスケープして表示テキストに出力してください -->
+            <!-- （すでに選択されていた品種 $breed_id と一致する場合は 'selected' を出力する処理が書かれています） -->
             <?php foreach ($breeds as $breed): ?>
-              <!-- 【TODO】 品種の「id」をvalue属性に、「name」をエスケープして表示テキストに出力してください -->
-              <!-- （すでに選択されていた品種 $breed_id と一致する場合は 'selected' を出力する処理が書かれています） -->
-              <option value="<!-- valueに出力 -->" <?php echo $breed_id == $breed['id'] ? 'selected' : ''; ?>>
+              <option value="<?php echo h($breed['id']); ?>" <?php echo $breed_id == $breed['id'] ? 'selected' : ''; ?>>
                 <!-- nameを出力 -->
+                <?php echo h($breed['name']); ?>
               </option>
             <?php endforeach; ?>
           </select>

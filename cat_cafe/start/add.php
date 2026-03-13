@@ -64,9 +64,9 @@ require_once 'inc/header.php';
           <label for="breed_id" class="form-label fw-bold">品種 <span class="badge bg-danger">必須</span></label>
           <select class="form-select" id="breed_id" name="breed_id" required>
             <option value="">選択してください</option>
+            <!-- 【TODO】 品種の「id」をvalue属性に、「name」をエスケープして表示テキストに出力してください -->
+            <!-- （セッションから復元した選択状態 $breed_id と一致する場合は 'selected' を出力する処理が書かれています） -->
             <?php foreach ($breeds as $breed): ?>
-              <!-- 【TODO】 品種の「id」をvalue属性に、「name」をエスケープして表示テキストに出力してください -->
-              <!-- （セッションから復元した選択状態 $breed_id と一致する場合は 'selected' を出力する処理が書かれています） -->
               <option value="<?php echo h($breed['id']); ?>" <?php echo $breed_id == $breed['id'] ? 'selected' : ''; ?>>
                 <!-- nameを出力 -->
                 <?php echo h($breed['name']); ?>

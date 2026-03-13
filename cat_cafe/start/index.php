@@ -32,6 +32,8 @@ require_once 'inc/header.php';
 
 <div class="d-flex justify-content-between align-items-center mb-4">
   <h2 class="mb-0">キャスト一覧</h2>
+  <?php //var_dump($cats); 
+  ?>
 </div>
 
 <?php if ($msg): ?>
@@ -57,14 +59,14 @@ require_once 'inc/header.php';
           <!-- 【TODO】 もしキャストの「image_name」が空ではなく、かつファイルが /images/ の下にあるなら、<img> タグで画像を表示してください -->
           <!-- （画像のパスや alt 属性のエスケープを忘れないこと。表示用のクラスは 'card-img-top' です） -->
           <?php if (!empty($cat['image_name']) && file_exists('images/' . $cat['image_name'])): ?>
-            <img src="imaged/<?php echo h($cat['image_name']); ?>" alt="<?php h($cat['name']); ?>" class="card-img-top">
+            <img src="images/<?php echo h($cat['image_name']); ?>" alt="<?php echo h($cat['name']); ?>" class="card-img-top">
           <?php else: ?>
-
             <!-- 【TODO】 もし画像がなければ、以下のプレースホルダーを表示させてください -->
             <div class="bg-secondary text-white d-flex justify-content-center align-items-center card-img-top">
               <span>No Image</span>
             </div>
           <?php endif; ?>
+
 
           <div class="card-body">
             <h5 class="card-title text-center text-pink mb-1">
@@ -73,7 +75,6 @@ require_once 'inc/header.php';
               <!-- 【TODO】 もし性別「gender」が 1(おとこのこ) なら、以下のHTML（青色の♂）を表示してください -->
               <?php if ($cat['gender'] === 1): ?>
                 <span class="text-primary fs-6">♂</span>
-
                 <!-- 【TODO】 もし性別「gender」が 2(おんなのこ) なら、以下のHTML（赤色の♀）を表示してください -->
               <?php elseif ($cat['gender'] === 2): ?>
                 <span class="text-danger fs-6">♀</span>
@@ -84,9 +85,7 @@ require_once 'inc/header.php';
               <?php echo h($cat['breed_name']); ?> / <?php echo h($cat['age']); ?>歳
             </p>
             <div class="text-center">
-              <span class="badge bg-light text-dark border mb-3">No. <!-- 【TODO】 そのキャストの「id」をエスケープして表示してください -->
-                <?php echo h($cat['id']); ?>
-              </span>
+              <span class="badge bg-light text-dark border mb-3">No. <!-- 【TODO】 そのキャストの「id」をエスケープして表示してください --><?php echo h($cat['id']); ?></span>
             </div>
 
             <div class="d-grid mt-auto">

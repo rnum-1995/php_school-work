@@ -8,9 +8,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // POSTデータの受け取り
 $name              = $_POST['name'] ?? '';
-$breed_id          = $_POST['breed_id'] ?? '';
-$gender            = $_POST['gender'] ?? '';
-$age               = $_POST['age'] ?? '';
+$breed_id          = (int)$_POST['breed_id'] ?? '';
+$gender            = (int)$_POST['gender'] ?? '';
+$age               = (int)$_POST['age'] ?? '';
 $profile           = $_POST['profile'] ?? '';
 
 // 入力データ保持用
@@ -31,7 +31,6 @@ if (empty($name) || empty($breed_id) || empty($gender) || $age === '') {
 
 // 【TODO】データベースに接続する関数を呼び出し、変数 $db に代入してください。
 $db = db_connect();
-
 try {
   // ★ユニーク制約チェック: 名前が既に使われていないか確認
   // 【TODO】名前が $name と一致するレコードの「件数」をcatsテーブルから取得するSQL文を作成し、変数 $sql_check に代入してください。
@@ -55,19 +54,21 @@ try {
   $image_name = null;
   if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
     $tmp_name = $_FILES['image']['tmp_name'];
-    //exif_imagetype()...画像の種類を調べる関数
+    // https://www.php.net/manual/ja/function.exif-imagetype.php
+    // exif_imagetype()...画像の種類を調べる関数
     $file_type = exif_imagetype($tmp_name);
-    //アップロードを許可する画像の種類の配列
+    // アップロードを許可する画像の種類の配列
     $allowed_types = [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP];
 
     if (in_array($file_type, $allowed_types)) {
-      //画像形式からファイルの拡張子を取得する
+      // https://www.php.net/manual/ja/function.image-type-to-extension.php
+      // 画像形式からファイルの拡張子を取得する
       $ext = image_type_to_extension($file_type);
       // 【TODO】uniqid()関数などを使ってユニークなファイル名を作成し、拡張子($ext)を結合して変数 $image_name に代入してください。
-
+      $image_name = uniqid('cat_') . $ext;
 
       // 【TODO】保存先のパスを 'images/' フォルダの下に $image_name として指定し、変数 $save_path に代入してください。
-
+      $save_path = 'images/' . $image_name;
       if (!move_uploaded_file($tmp_name, $save_path)) {
         $_SESSION['err_msg'] = '画像の保存に失敗しました。';
         header('Location: add.php');
@@ -82,18 +83,26 @@ try {
 
   // データベースへの登録
   // 【TODO】catsテーブルに各データ（name, breed_id, gender, age, profile, image_name）をINSERTするSQL文を作成し、変数 $sql に代入してください。
+  $sql = 'INSERT INTO cats (name,breed_id,gender,age,profile,image_name) VALUES (:name,:breed_id,:gender,:age,:profile,:image_name)';
 
-
-  // 【TODO】SQL文を準備し、実行してください。（すべての変数について bindValue を行うこと。profileやimage_nameはNULLが許可される点に注意）
-
+  // 【TODO】SQL文を準備し、実行してください。（すべての変数について bindParam を行うこと。profileやimage_nameはNULLが許可される点に注意）
+  $stmt = $db->prepare($sql);
+  $stmt->bindParam(':name', $name, PDO::PARAM_STR);
+  $stmt->bindParam(':breed_id', $breed_id, PDO::PARAM_INT);
+  $stmt->bindParam(':gender', $gender, PDO::PARAM_INT);
+  $stmt->bindParam(':age', $age, PDO::PARAM_INT);
+  $stmt->bindParam(':profile', $profile, PDO::PARAM_STR);
+  $stmt->bindParam(':image_name', $image_name, is_null($image_name) ? PDO::PARAM_NULL : PDO::PARAM_STR);
+  $stmt->execute();
 
   // 【TODO】最後に挿入されたレコードのIDを取得し、変数 $new_id に代入してください。
+  $new_id = $db->lastInsertId();
 
   // 登録完了後、入力保持用のセッションを破棄
   unset($_SESSION['form_data']);
   $_SESSION['msg'] = '新しいキャストを登録しました。';
 
-  header('Location: detail.php?id=' . $new_id);
+  header('Location: detail.phpid?=' . $new_id);
   exit;
 } catch (PDOException $e) {
   $_SESSION['err_msg'] = 'データベースエラー: ' . $e->getMessage();
